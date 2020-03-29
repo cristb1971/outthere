@@ -1,0 +1,13 @@
+[remap]
+
+importer="image"
+type="Image"
+path="res://.import/starfield.png-3002f44695e402fb6edd7b016d9260ac.image"
+
+[deps]
+
+source_file="res://assets/art/starfield.png"
+dest_files=[ "res://.import/starfield.png-3002f44695e402fb6edd7b016d9260ac.image" ]
+
+[params]
+
