@@ -12,17 +12,29 @@ const max_rotation = 12
 const maxSpeed = 1600
 const speed_increment = 25
 
+var bullet = preload("res://bullet.tscn")
+
 
 func _ready():
 	screen_size = get_viewport_rect().size
 	hide()
 	$CollisionShape2D.disabled = true
+	set_process_input(true)
 	
 func start(pos):
 	position = pos
 	show()
 	$CollisionShape2D.disabled = false
 	
+func _input(event):
+	if event.is_action_pressed("ui_fire"):
+		# fire a bullet
+		var projectile = bullet.instance()
+		projectile.position = position
+		projectile.rotation = rotation
+		var universe = get_parent()
+		universe.add_child(projectile)
+		
 	
 func get_input():
 	var thruster_on = false
