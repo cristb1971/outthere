@@ -37,6 +37,7 @@ var half_screen_size = Vector2()
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	$lifetime_timer.start()
+	$message_timer.start()
 	
 func setup_random():
 	rotation_vel = rand_range(-MAX_ROTATION_VEL, MAX_ROTATION_VEL)
@@ -63,33 +64,37 @@ func setup_params(inPosition, inRotationVel, inMovementSpeed, inMovementDir, inI
 
 func set_screen_params(size):
 	half_screen_size = size / 2
-	print ("Asteroid screen size changed half=(" + str(half_screen_size) + ") all = (" + str(size) + ")")
+	print (self.name + ": Asteroid screen size set half=(" + str(half_screen_size) + ") all = (" + str(size) + ")")
 
 func check_my_location():
 	if position.x < (PLAYFIELD_MIN_X + half_screen_size.x):
+		print(self.name + ": Small X caused shutdown: " + str(position.x))
 		should_shutdown = true
 	elif position.x > (PLAYFIELD_MAX_X - half_screen_size.x):
+		print(self.name + ": Big X caused shutdown: " + str(position.x))
 		should_shutdown = true
 	
 	if position.y < (PLAYFIELD_MIN_Y + half_screen_size.y):
+		print(self.name + ": Small Y caused shutdown: " + str(position.y))
 		should_shutdown = true
 	elif position.y > (PLAYFIELD_MAX_Y - half_screen_size.y):
+		print(self.name + ": Big Y caused shutdown: " + str(position.y))
 		should_shutdown = true
-	print("loc = " + should_shutdown)
-		
 
 func check_my_visibility():
 	var xvis = false
 	var yvis = false
-	
-	if position.x > PLAYFIELD_MIN_X and position.x < PLAYFIELD_MAX_X:
+	if position.x > PLAYFIELD_MIN_X + half_screen_size.x and position.x < PLAYFIELD_MAX_X - half_screen_size.x:
 		xvis = true
-	if position.y > PLAYFIELD_MIN_Y and position.y < PLAYFIELD_MAX_Y:
+	if position.y > PLAYFIELD_MIN_Y + half_screen_size.y and position.y < PLAYFIELD_MAX_Y - half_screen_size.y:
 		yvis = true
 	has_been_visible = xvis and yvis
-	
-	print("vis = " + has_been_visible)
 
+func print_status():
+	print("I am " + self.name + " at position: " + str(position))
+	print("has been visible = " + str(has_been_visible) + " - should shutdown = " + str(should_shutdown))
+	print("===================================")
+	
 func _physics_process(delta):
 	rotation += rotation_vel * delta
 	velocity = Vector2(movement_speed,0).rotated(movement_dir)
@@ -105,9 +110,10 @@ func _physics_process(delta):
 	# @note - have to spawn earlier.  Because if the player gets to the new spot before the asteroid does, it can just pop into existance.  Also...
 	# should spawn it off in the distance so it doesn't seem to just blink into existance at the screen's edge.
 	
-	if has_been_visible:
+	if has_been_visible and !shutting_down:
 		check_my_location()
-	else:
+
+	if !has_been_visible:
 		check_my_visibility()
 		
 	if should_shutdown and !shutting_down:
@@ -123,7 +129,7 @@ func _on_lifetime_timer_timeout():
 	# freeing it.
 	# theoretically speaking, this would mean separating the connection from the 
 	# killme timer into a different function without sexy effects.
-	print("Killing asteroid.")
+	print(self.name + ": Killing asteroid.")
 	queue_free()
 
 

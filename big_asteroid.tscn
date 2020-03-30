@@ -40,5 +40,8 @@ one_shot = true
 [node name="killme_timer" type="Timer" parent="."]
 wait_time = 10.0
 one_shot = true
+
+[node name="message_timer" type="Timer" parent="."]
 [connection signal="timeout" from="lifetime_timer" to="." method="_on_lifetime_timer_timeout"]
 [connection signal="timeout" from="killme_timer" to="." method="_on_lifetime_timer_timeout"]
+[connection signal="timeout" from="message_timer" to="." method="print_status"]
