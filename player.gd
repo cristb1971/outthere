@@ -89,5 +89,8 @@ func _physics_process(delta):
 		decimal_location = check_location
 		emit_signal("player_pos_update", check_location)
 		
-	
+func asteroid_hit(asteroid_dir):
+#	movement_rotation = max_rotation * 10
+#	movement_velocity = 15
+	print("Playa was hit by an asteroid")
 

@@ -115,10 +115,7 @@ func _physics_process(delta):
 	rotation += asteroid_val["rotation_vel"] * delta
 	asteroid_val["velocity"] = Vector2(asteroid_val["movement_speed"],0).rotated(asteroid_val["movement_dir"])
 	position += asteroid_val["velocity"] * delta
-	
 	if asteroid_val["shake_level"] > 0:
-#		var side = 1 if (randi() % 2 == 0) else -1
-#		var rot = rand_range(0, PI / 4)
 		var rot = rand_range(0,PI * 2) + asteroid_val["movement_dir"] + (PI / 4)
 		var new_spot = Vector2(asteroid_val["shake_level"] * 30,0).rotated(rot)
 		position += new_spot * delta
@@ -126,7 +123,6 @@ func _physics_process(delta):
 	check_my_visibility()
 	if shutting_down:
 		check_shutdown_border()
-
 ##  if the should shut down flag is tripped, the asteroid informs
 ##  the main game to spawn a new asteroid at its location, except
 ##  on the other side of the playfield.  But only once!
@@ -142,6 +138,8 @@ func _on_lifetime_timer_timeout():
 	queue_free()
 
 func _on_big_asteroid_body_entered(body):
+	if (body.has_method("asteroid_hit")):
+		body.asteroid_hit(asteroid_val["movement_dir"])
 	print(self.name + ": Asteroid was hit.")
 
 
