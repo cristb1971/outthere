@@ -18,10 +18,8 @@ func _physics_process(delta):
 
 
 func _on_bullet_area_entered(area):
-	# Can check here to see if our layer has been hit.
+	# todo: make a lil splosion animation.
 	queue_free()
-
-
 
 func _on_VisibilityNotifier2D_screen_exited():
 	queue_free()

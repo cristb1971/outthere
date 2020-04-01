@@ -20,9 +20,9 @@ animations = [ {
 [sub_resource type="CircleShape2D" id=2]
 radius = 103.433
 
-[node name="big_asteroid" type="KinematicBody2D"]
-collision_layer = 31
-collision_mask = 0
+[node name="big_asteroid" type="Area2D"]
+collision_layer = 8
+collision_mask = 15
 script = ExtResource( 1 )
 
 [node name="asteroid_sprite" type="AnimatedSprite" parent="."]
@@ -37,11 +37,8 @@ shape = SubResource( 2 )
 wait_time = 300.0
 one_shot = true
 
-[node name="killme_timer" type="Timer" parent="."]
-wait_time = 10.0
-one_shot = true
-
 [node name="message_timer" type="Timer" parent="."]
+[connection signal="area_entered" from="." to="." method="_on_big_asteroid_area_entered"]
+[connection signal="body_entered" from="." to="." method="_on_big_asteroid_body_entered"]
 [connection signal="timeout" from="lifetime_timer" to="." method="_on_lifetime_timer_timeout"]
-[connection signal="timeout" from="killme_timer" to="." method="_on_lifetime_timer_timeout"]
 [connection signal="timeout" from="message_timer" to="." method="print_status"]

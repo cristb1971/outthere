@@ -18,6 +18,8 @@ radius = 4.96925
 height = 27.7157
 
 [node name="bullet" type="Area2D"]
+collision_layer = 2
+collision_mask = 12
 script = ExtResource( 4 )
 
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
@@ -33,4 +35,5 @@ shape = SubResource( 2 )
 [node name="VisibilityNotifier2D" type="VisibilityNotifier2D" parent="."]
 position = Vector2( 0.595825, -0.397217 )
 scale = Vector2( 1.4568, 0.642506 )
+[connection signal="area_entered" from="." to="." method="_on_bullet_area_entered"]
 [connection signal="screen_exited" from="VisibilityNotifier2D" to="." method="_on_VisibilityNotifier2D_screen_exited"]

@@ -39,7 +39,8 @@ func new_game():
 func player_pos_updated(location):
 	$HUD.set_top_text("Position: (" + str(location.x) + ", " + str(location.y) + ")")
 
-func asteroid_out_of_bounds(old_position, rotation_speed, velocity, movement_dir,is_resource):
+func asteroid_out_of_bounds(old_asteroid_dict):
+	var old_position = old_asteroid_dict["position"]
 	var new_position = old_position
 	var half_screen_size = screenSize / 2
 
@@ -54,7 +55,8 @@ func asteroid_out_of_bounds(old_position, rotation_speed, velocity, movement_dir
 		new_position.y = PLAYFIELD_MIN_Y - half_screen_size.y
 	
 	var newAsteroid = BigAsteroid.instance()
-	newAsteroid.setup_params(new_position, rotation_speed, velocity, movement_dir, is_resource)
+	old_asteroid_dict["position"] = new_position
+	newAsteroid.setup_params(old_asteroid_dict)
 	newAsteroid.connect("spawn_replacement", self, "asteroid_out_of_bounds")
 	self.connect("screen_resized", newAsteroid, "set_screen_params")
 	newAsteroid.set_screen_params(screenSize)
