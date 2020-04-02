@@ -1,0 +1,39 @@
+So the game concept.
+
+A big-ish playfield - something that takes, say, 5 seconds to traverse at maximum speed.
+Drifting bodies.  Several types:
+  * Resource asteroids.
+  * Random space occupying useless asteroids.
+  * impervious asteroids that do damage
+
+Player
+Enemies.  The individual enemies aren't much - they are trying to collect resources to put together a hunter vehicle.
+  Enemies pound their ships into the resource asteroids, knocking resources out.
+  Players can try this, but it damages their ship.
+    Instead players should shoot resource asteroids to free up resources. 
+    Players can shoot and destroy enemy ships.  And if the enemy ship is carrying a resource, it is dropped.
+    Players use the resources to fuel their ships.  Fuel provides movement and firepower.
+
+Hunter vehicle - very fast, hunts the player.  Destroyable, but it's tough.
+
+
+
+
+Concept: shaky asteroids.
+  When an asteroid takes a shot or a hit by an enemy, it should be a random value for 
+  damage.  When the damage taken over a short period of time exceeds some threshold
+  the asteroid should start shaking around.  The more violently it is hit, the more
+  violently it shakes.
+  When damage available goes to 0 it breaks.
+
+  Big asteroid -> 2 - 4 smaller entities with a chance for a resource to fall out.
+    - smaller entities can be either 
+      -  useless asteroid  (60%)
+      -  resource asteroid (10%)
+      -  impervious asteroid (30%)
+
+
+Concept:  Enemies have no guns.
+  So if they get pissed off at the player, they're going to ram him.  That's all they
+  have is the ability to ram.  Their pathing should be to swing wide around the player
+  and turn on their turbo to accelerate and cause damage.
