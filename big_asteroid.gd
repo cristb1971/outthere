@@ -4,6 +4,8 @@ extends Area2D
 # on the other side of the playfield.
 signal spawn_replacement(asteroid_dict)
 
+const DEBUG = false
+
 # Constants for how the asteroid behaves.
 const MAX_ROTATION_VEL = 5
 const MAX_VELOCITY = 150
@@ -15,6 +17,13 @@ const PLAYFIELD_MAX_X = 9600
 const PLAYFIELD_MIN_X = 800
 const PLAYFIELD_MAX_Y = 7200
 const PLAYFIELD_MIN_Y = 600
+
+# Constants for the animation frame setting for 
+# damage taking.
+const NORMAL_FRAME = 0
+const LIGHT_DAMAGE_FRAME = 1
+const DAMAGE_FRAME = 2
+const HEAVY_DAMAGE_FRAME = 3
 
 var asteroid_val = {
 #   Physiological vars
@@ -54,7 +63,7 @@ func setup_random():
 		asteroid_val["resource"] = "resource"
 	else:
 		asteroid_val["resource"] = "empty"
-	
+
 	$asteroid_sprite.animation = asteroid_val["resource"]
 	asteroid_val["movement_dir"] = rand_range(0,2 * PI)
 	asteroid_val["movement_speed"] = rand_range(MIN_VELOCITY, MAX_VELOCITY)
@@ -101,10 +110,12 @@ func check_my_visibility():
 		should_shutdown = true
 
 func print_status():
-	print("I am " + self.name + " at position: " + str(position))
-	print("has been visible = " + str(has_been_visible) + " - should shutdown = " + str(should_shutdown))
-	print("My HP: " + str(asteroid_val["hit_points"]) + " - recent damage: " + str(asteroid_val["recent_damage"]) + " - Shake Level: " + str(asteroid_val["shake_level"])) 
-	print("===================================")
+	if DEBUG:
+		print("I am " + self.name + " at position: " + str(position))
+		print("has been visible = " + str(has_been_visible) + " - should shutdown = " + str(should_shutdown))
+		print("My HP: " + str(asteroid_val["hit_points"]) + " - recent damage: " + str(asteroid_val["recent_damage"]) + " - Shake Level: " + str(asteroid_val["shake_level"])) 
+		print("===================================")
+
 	if (asteroid_val["recent_damage"] > 10):
 		asteroid_val["shake_level"] +=1
 	elif asteroid_val["shake_level"] > 1 :
@@ -135,13 +146,15 @@ func _physics_process(delta):
 	
 
 func _on_lifetime_timer_timeout():
-	print(self.name + ": Killing asteroid.")
+	if DEBUG:
+		print(self.name + ": Killing asteroid due to existing for too long.")
 	queue_free()
 
 func _on_big_asteroid_body_entered(body):
 	if (body.has_method("asteroid_hit")):
 		body.asteroid_hit(asteroid_val["movement_dir"])
-	print(self.name + ": Asteroid was hit.")
+	if DEBUG:
+		print(self.name + ": Asteroid was hit.")
 
 
 func _on_big_asteroid_area_entered(area):
@@ -149,15 +162,19 @@ func _on_big_asteroid_area_entered(area):
 	# I just need to figure out how.
 	asteroid_val["hit_points"] -= 10
 	asteroid_val["recent_damage"] += 10
-	if asteroid_val["hit_points"] < 150:
-		$asteroid_sprite.set_frame(1)
 	if asteroid_val["hit_points"] < 0:
 		$asteroid_sprite.hide()
 		$explosion.show()
 		$explosion.play()
 		exploding = true
-		print("Asteroid shot to death")
-
+		if DEBUG:
+			print("Asteroid shot to death")	
+	elif asteroid_val["hit_points"] < 50:
+		$asteroid_sprite.set_frame(HEAVY_DAMAGE_FRAME)
+	elif asteroid_val["hit_points"] < 100:
+		$asteroid_sprite.set_frame(DAMAGE_FRAME)
+	elif asteroid_val["hit_points"] < 150:
+		$asteroid_sprite.set_frame(LIGHT_DAMAGE_FRAME)
 
 
 func _on_explosion_animation_finished():

@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=2]
+[gd_scene load_steps=17 format=2]
 
 [ext_resource path="res://big_asteroid.gd" type="Script" id=1]
 [ext_resource path="res://assets/art/asteroids/big_asteroid.png" type="Texture" id=2]
@@ -9,15 +9,19 @@
 [ext_resource path="res://assets/art/explosions/big_asteroids/empty_4.png" type="Texture" id=7]
 [ext_resource path="res://assets/art/explosions/big_asteroids/empty_3.png" type="Texture" id=8]
 [ext_resource path="res://assets/art/explosions/big_asteroids/empty_2.png" type="Texture" id=9]
+[ext_resource path="res://assets/art/asteroids/big_asteroid_light_damage.png" type="Texture" id=10]
+[ext_resource path="res://assets/art/asteroids/big_resource_light_damage.png" type="Texture" id=11]
+[ext_resource path="res://assets/art/asteroids/big_resource_heavy_damage.png" type="Texture" id=12]
+[ext_resource path="res://assets/art/asteroids/big_asteroid_heavy_damage.png" type="Texture" id=13]
 
 [sub_resource type="SpriteFrames" id=1]
 animations = [ {
-"frames": [ ExtResource( 2 ), ExtResource( 4 ) ],
+"frames": [ ExtResource( 2 ), ExtResource( 10 ), ExtResource( 4 ), ExtResource( 13 ) ],
 "loop": true,
 "name": "empty",
 "speed": 5.0
 }, {
-"frames": [ ExtResource( 3 ), ExtResource( 5 ) ],
+"frames": [ ExtResource( 3 ), ExtResource( 11 ), ExtResource( 5 ), ExtResource( 12 ) ],
 "loop": true,
 "name": "resource",
 "speed": 5.0
