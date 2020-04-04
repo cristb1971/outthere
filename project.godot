@@ -19,6 +19,13 @@ config/name="Outthere"
 run/main_scene="res://main.tscn"
 config/icon="res://icon.png"
 
+[display]
+
+window/size/width=1600
+window/size/height=900
+window/size/resizable=false
+window/size/fullscreen=true
+
 [input]
 
 ui_accept={

@@ -40,6 +40,7 @@ var should_shutdown = false
 var shutting_down = false
 var has_been_visible = false
 var half_screen_size = Vector2()
+var exploding = false
 
 
 # Called when the node enters the scene tree for the first time.
@@ -148,7 +149,16 @@ func _on_big_asteroid_area_entered(area):
 	# I just need to figure out how.
 	asteroid_val["hit_points"] -= 10
 	asteroid_val["recent_damage"] += 10
+	if asteroid_val["hit_points"] < 150:
+		$asteroid_sprite.set_frame(1)
 	if asteroid_val["hit_points"] < 0:
+		$asteroid_sprite.hide()
+		$explosion.show()
+		$explosion.play()
+		exploding = true
 		print("Asteroid shot to death")
-		queue_free()
 
+
+
+func _on_explosion_animation_finished():
+	queue_free()
