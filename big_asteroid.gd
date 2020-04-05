@@ -3,6 +3,7 @@ extends Area2D
 # the signal that's emitted when a new copy of this asteroid should be created
 # on the other side of the playfield.
 signal spawn_replacement(asteroid_dict)
+signal update_asteroid(id, location)
 
 const DEBUG = false
 
@@ -27,6 +28,7 @@ const HEAVY_DAMAGE_FRAME = 3
 
 var asteroid_val = {
 #   Physiological vars
+	"id" : "",
 	"hit_points": 0,
 	"recent_damage" : 0,
 	"shake_level" : 0,
@@ -57,7 +59,8 @@ func _ready():
 	$lifetime_timer.start()
 	$message_timer.start()  #Uncomment this line if you want to print debug info
 	
-func setup_random():
+func setup_random(in_name):
+	asteroid_val["id"] = in_name
 	asteroid_val["rotation_vel"] = rand_range(-MAX_ROTATION_VEL, MAX_ROTATION_VEL)
 	if randi() % 4 == 0:
 		asteroid_val["resource"] = "resource"
@@ -121,6 +124,7 @@ func print_status():
 	elif asteroid_val["shake_level"] > 1 :
 		asteroid_val["shake_level"] -= 1
 	asteroid_val["recent_damage"] = 0;
+	emit_signal("update_asteroid", asteroid_val["id"], position)
 		
 	
 func _physics_process(delta):
