@@ -1,6 +1,6 @@
 extends KinematicBody2D
 
-signal player_pos_update(position)
+signal player_pos_update(position, rotation)
 
 const VELOCITY_DECAY = 4
 const ROTATION_DECAY = .5
@@ -93,7 +93,7 @@ func _physics_process(delta):
 	check_location.y = int(position.y)
 	if (check_location != decimal_location):
 		decimal_location = check_location
-		emit_signal("player_pos_update", check_location)
+		emit_signal("player_pos_update", check_location, rotation)
 		
 func asteroid_hit(asteroid_dir):
 	movement_rotation = max_rotation * 3

@@ -1,6 +1,7 @@
 extends Node
 
 signal screen_resized(size)
+signal player_moved(location, rotation)
 
 # Constants for the known playfield.  These are raw values - the boundaries of our playfield
 # without taking into account any screen dimensions.
@@ -36,8 +37,12 @@ func new_game():
 	newAsteroid.set_screen_params(screenSize)
 	self.connect("screen_resized", newAsteroid, "set_screen_params")
 
-func player_pos_updated(location):
-	$HUD.set_top_text("Position: (" + str(location.x) + ", " + str(location.y) + ")")
+func player_pos_updated(location, in_rotation):
+	var in_pos = location - Vector2(800,600)
+	in_pos = in_pos / 20
+	$HUD.set_top_text("mini: (" + str(int(in_pos.x)) + ", "+ str(int(in_pos.y)) + ")" + "-- Position: (" + str(location.x) + ", " + str(location.y) + ")")
+	#$HUD.set_top_text("Position: (" + str(location.x) + ", " + str(location.y) + ")")
+	emit_signal("player_moved", location, in_rotation)
 
 func asteroid_out_of_bounds(old_asteroid_dict):
 	var old_position = old_asteroid_dict["position"]
