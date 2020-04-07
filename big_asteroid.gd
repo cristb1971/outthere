@@ -4,12 +4,13 @@ extends Area2D
 # on the other side of the playfield.
 signal spawn_replacement(asteroid_dict)
 signal update_asteroid(id, location)
+signal asteroid_dying(id)
 
 const DEBUG = false
 
 # Constants for how the asteroid behaves.
 const MAX_ROTATION_VEL = 5
-const MAX_VELOCITY = 150
+const MAX_VELOCITY = 150   
 const MIN_VELOCITY = 1
 
 # Constants for the known playfield.  These are raw values - the boundaries of our playfield
@@ -93,6 +94,7 @@ func check_shutdown_border():
 	var shut_border = Rect2(Vector2(0,0), width)
 	if !shut_border.has_point(position):
 		print(self.name + ": Killing asteroid due to leaving space.")
+		emit_signal("asteroid_dying",asteroid_val["id"])
 		queue_free()
 
 
@@ -152,6 +154,7 @@ func _physics_process(delta):
 func _on_lifetime_timer_timeout():
 	if DEBUG:
 		print(self.name + ": Killing asteroid due to existing for too long.")
+	emit_signal("asteroid_dying",asteroid_val["id"])
 	queue_free()
 
 func _on_big_asteroid_body_entered(body):
@@ -182,4 +185,5 @@ func _on_big_asteroid_area_entered(area):
 
 
 func _on_explosion_animation_finished():
+	emit_signal("asteroid_dying",asteroid_val["id"])
 	queue_free()

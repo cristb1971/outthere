@@ -22,12 +22,14 @@ func add_big_asteroid(add_name, loc, type):
 		rep.set_frame(0)
 	add_child(rep)
 	big_asteroids[add_name] = rep
+	_set_rep_visibility(rep)
 
 func update_big_asteroid(move_name, loc):
 	if (big_asteroids.has(move_name)):
 		loc -= Vector2(800,600)
 		var rep = big_asteroids[move_name]
 		rep.position = loc / MINIMAP_SCALE
+		_set_rep_visibility(rep)
 
 func remove_big_asteroid(remove_name):
 	var rep = big_asteroids[remove_name]
@@ -38,3 +40,11 @@ func update_player_position(in_pos, in_rot):
 	in_pos -= Vector2(800,600)
 	player_icon.position = in_pos / MINIMAP_SCALE
 	player_icon.rotation = in_rot
+
+func _set_rep_visibility(rep):
+	var screen_rect = Rect2(Vector2(0,0), Vector2(440,330))
+	if (screen_rect.has_point(rep.position)):
+		rep.show()
+	else:
+		rep.hide()
+	

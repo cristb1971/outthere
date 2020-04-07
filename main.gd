@@ -29,18 +29,7 @@ func _ready():
 func new_game():
 	screenSize = get_viewport().size
 	$player.start($startPos.position)
-	var newAsteroid = BigAsteroid.instance()
-	add_child(newAsteroid)
-	var asteroidId = "asteroid" + str(asteroidCount)
-	newAsteroid.setup_random(asteroidId)
-	emit_signal("asteroid_added", asteroidId, newAsteroid.position, newAsteroid.asteroid_val["resource"])
-	asteroidCount += 1
-	newAsteroid.position = $startPos.position + Vector2(100,100)
-	newAsteroid.connect("spawn_replacement", self, "asteroid_out_of_bounds")
-	newAsteroid.set_screen_params(screenSize)
-	self.connect("screen_resized", newAsteroid, "set_screen_params")
-	newAsteroid.connect("update_asteroid", self, "asteroid_updated")
-	
+	_start_level_asteroids()
 
 func player_pos_updated(location, in_rotation):
 #	var in_pos = location - Vector2(800,600)
@@ -50,6 +39,7 @@ func player_pos_updated(location, in_rotation):
 	emit_signal("player_moved", location, in_rotation)
 
 func asteroid_out_of_bounds(old_asteroid_dict):
+	var new_asteroid_dict = old_asteroid_dict.duplicate(true)
 	var old_position = old_asteroid_dict["position"]
 	var new_position = old_position
 	var half_screen_size = screenSize / 2
@@ -63,28 +53,49 @@ func asteroid_out_of_bounds(old_asteroid_dict):
 		new_position.y = PLAYFIELD_MAX_Y + half_screen_size.y
 	elif old_position.y > (PLAYFIELD_MAX_Y - half_screen_size.y):
 		new_position.y = PLAYFIELD_MIN_Y - half_screen_size.y
-	
-	var newAsteroid = BigAsteroid.instance()
-	emit_signal("asteroid_removed", old_asteroid_dict["id"])
-	old_asteroid_dict["id"] = "asteroid" + str(asteroidCount)
+	new_asteroid_dict["position"] = new_position
+	new_asteroid_dict["id"] = "asteroid" + str(asteroidCount)
+	_spawn_asteroid(new_asteroid_dict)
 	asteroidCount += 1
-	old_asteroid_dict["position"] = new_position
-	newAsteroid.setup_params(old_asteroid_dict)
-	newAsteroid.connect("spawn_replacement", self, "asteroid_out_of_bounds")
-	newAsteroid.connect("update_asteroid", self, "asteroid_updated")
-	self.connect("screen_resized", newAsteroid, "set_screen_params")
-	newAsteroid.set_screen_params(screenSize)
-	add_child(newAsteroid)
-	emit_signal("asteroid_added", old_asteroid_dict["id"], old_asteroid_dict["position"], old_asteroid_dict["resource"])
-	print("Spawning at: " + str(new_position))
 
 func asteroid_updated(id, location):
 	emit_signal("asteroid_moved", id, location)
+
+func asteroid_died(id):
+	emit_signal("asteroid_removed", id)
 	
 func screen_size_changed():
 	screenSize = get_viewport().size
 	emit_signal("screen_resized", screenSize)
 
-
 func update_big_asteroid(move_name, location):
 	pass # Replace with function body.
+
+func _start_level_asteroids():
+	for i in range(10):
+		_spawn_asteroid(Dictionary())
+
+
+
+func _spawn_asteroid(in_defs):
+	var in_empty = not in_defs
+	
+	var asteroidId = "asteroid" + str(asteroidCount)
+	var newAsteroid = BigAsteroid.instance()
+	if in_empty:
+		newAsteroid.setup_random(asteroidId)
+		var new_pos = Vector2(rand_range(0,8800), rand_range(0,6600))
+		newAsteroid.position = new_pos
+	else:
+		newAsteroid.setup_params(in_defs)
+	
+	asteroidCount += 1
+	newAsteroid.set_screen_params(screenSize)
+	newAsteroid.connect("spawn_replacement", self, "asteroid_out_of_bounds")
+	newAsteroid.connect("update_asteroid", self, "asteroid_updated")
+	newAsteroid.connect("asteroid_dying", self, "asteroid_died")
+	self.connect("screen_resized", newAsteroid, "set_screen_params")
+	emit_signal("asteroid_added", asteroidId, newAsteroid.position, newAsteroid.asteroid_val["resource"])
+	add_child(newAsteroid)
+	return newAsteroid
+	
