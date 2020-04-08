@@ -55,7 +55,7 @@ shape = SubResource( 2 )
 wait_time = 300.0
 one_shot = true
 
-[node name="message_timer" type="Timer" parent="."]
+[node name="status_timer" type="Timer" parent="."]
 wait_time = 0.06
 
 [node name="explosion" type="AnimatedSprite" parent="."]
@@ -63,8 +63,11 @@ visible = false
 scale = Vector2( 0.5, 0.5 )
 frames = SubResource( 3 )
 animation = "empty"
+
+[node name="debug_timer" type="Timer" parent="."]
 [connection signal="area_entered" from="." to="." method="_on_big_asteroid_area_entered"]
 [connection signal="body_entered" from="." to="." method="_on_big_asteroid_body_entered"]
 [connection signal="timeout" from="lifetime_timer" to="." method="_on_lifetime_timer_timeout"]
-[connection signal="timeout" from="message_timer" to="." method="print_status"]
+[connection signal="timeout" from="status_timer" to="." method="update_status"]
 [connection signal="animation_finished" from="explosion" to="." method="_on_explosion_animation_finished"]
+[connection signal="timeout" from="debug_timer" to="." method="print_status"]

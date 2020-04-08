@@ -11,7 +11,7 @@ const DEBUG = false
 # Constants for how the asteroid behaves.
 const MAX_ROTATION_VEL = 5
 const MAX_VELOCITY = 150   
-const MIN_VELOCITY = 1
+const MIN_VELOCITY = 100
 
 # Constants for the known playfield.  These are raw values - the boundaries of our playfield
 # without taking into account any screen dimensions.
@@ -58,7 +58,9 @@ var exploding = false
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	$lifetime_timer.start()
-	$message_timer.start()  #Uncomment this line if you want to print debug info
+	$status_timer.start() 
+	if DEBUG:
+		$debug_timer.start()
 	
 func setup_random(in_name):
 	asteroid_val["id"] = in_name
@@ -70,6 +72,7 @@ func setup_random(in_name):
 
 	$asteroid_sprite.animation = asteroid_val["resource"]
 	asteroid_val["movement_dir"] = rand_range(0,2 * PI)
+#	asteroid_val["movement_dir"] = 1.5 * PI
 	asteroid_val["movement_speed"] = rand_range(MIN_VELOCITY, MAX_VELOCITY)
 	asteroid_val["hit_points"] = 300
 	
@@ -83,7 +86,8 @@ func setup_params(inVals):
 
 func set_screen_params(size):
 	half_screen_size = size / 2
-	print (self.name + ": Asteroid screen size set half=(" + str(half_screen_size) + ") all = (" + str(size) + ")")
+	if DEBUG:
+		print (self.name + ": Asteroid screen size set half=(" + str(half_screen_size) + ") all = (" + str(size) + ")")
 
 ##########################################
 ##  This determines whether the asteroid has drifted way out of the visible
@@ -93,7 +97,8 @@ func check_shutdown_border():
 	var width = Vector2(PLAYFIELD_MAX_X + half_screen_size.x * 2, PLAYFIELD_MAX_Y + half_screen_size.y * 2)
 	var shut_border = Rect2(Vector2(0,0), width)
 	if !shut_border.has_point(position):
-		print(self.name + ": Killing asteroid due to leaving space.")
+		if DEBUG:
+			print(self.name + ": Killing asteroid due to leaving space.")
 		emit_signal("asteroid_dying",asteroid_val["id"])
 		queue_free()
 
@@ -108,11 +113,12 @@ func check_my_visibility():
 	var size = Vector2(PLAYFIELD_MAX_X - PLAYFIELD_MIN_X, PLAYFIELD_MAX_Y - PLAYFIELD_MIN_Y)
 	origin += half_screen_size
 	size -= 2 * half_screen_size
-	var visible_border = Rect2(origin, size)
-	if visible_border.has_point(position):
+	var shutdown_border = Rect2(origin, size)
+	if shutdown_border.has_point(position):
 		has_been_visible = true
-	elif has_been_visible == true:
+	elif has_been_visible:
 		should_shutdown = true
+
 
 func print_status():
 	if DEBUG:
@@ -121,6 +127,7 @@ func print_status():
 		print("My HP: " + str(asteroid_val["hit_points"]) + " - recent damage: " + str(asteroid_val["recent_damage"]) + " - Shake Level: " + str(asteroid_val["shake_level"])) 
 		print("===================================")
 
+func update_status():
 	if (asteroid_val["recent_damage"] > 10):
 		asteroid_val["shake_level"] +=1
 	elif asteroid_val["shake_level"] > 1 :
@@ -133,12 +140,17 @@ func _physics_process(delta):
 	rotation += asteroid_val["rotation_vel"] * delta
 	asteroid_val["velocity"] = Vector2(asteroid_val["movement_speed"],0).rotated(asteroid_val["movement_dir"])
 	position += asteroid_val["velocity"] * delta
+	if !has_been_visible: 	# wrap.
+		position.x = wrapf(position.x, 800, 9600)
+		position.y = wrapf(position.y, 600, 7200)
+
 	if asteroid_val["shake_level"] > 0:
 		var rot = rand_range(0,PI * 2) + asteroid_val["movement_dir"] + (PI / 4)
 		var new_spot = Vector2(asteroid_val["shake_level"] * 30,0).rotated(rot)
 		position += new_spot * delta
-	
+
 	check_my_visibility()
+	
 	if shutting_down:
 		check_shutdown_border()
 ##  if the should shut down flag is tripped, the asteroid informs

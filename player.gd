@@ -91,14 +91,15 @@ func _physics_process(delta):
 	var check_location = Vector2()
 	check_location.x = int(position.x)
 	check_location.y = int(position.y)
-	if (check_location != decimal_location):
+	if (check_location != decimal_location) || movement_rotation != 0:
 		decimal_location = check_location
 		emit_signal("player_pos_update", check_location, rotation)
 		
 func asteroid_hit(asteroid_dir):
 	movement_rotation = max_rotation * 3
 	if movement_velocity > 0:
-		movement_velocity = -2 * movement_velocity
+		movement_velocity = 2 * movement_velocity
+		thrust_rotation = -thrust_rotation
 	else:
 		movement_velocity = 800
 		thrust_rotation = asteroid_dir
